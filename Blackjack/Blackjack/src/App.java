@@ -26,6 +26,7 @@ public class App {
     static int won = 0;
     static Scanner reader = new Scanner(System.in);
     static String[] drawn = new String[52];
+    static boolean win = false;
 
     public static String randomCard() throws InvalidSuiteExcepetion {
         Random rand = new Random();
@@ -63,16 +64,28 @@ public class App {
         if (total1 == 21) {
             System.out.println("Blackjack!");
             won += 1;
+            win = true;
             return true;
         } else if (total2 == 21) {
             System.out.println("Blackjack!");
             won += 1;
+            win = true;
             return true;
         } else if (total1 > 21 & total2 > 21) {
             System.out.println("Busted!");
+            win = false;
             return true;
         }
         return false;
+    }
+
+    private static void addToDrawn(String card) {
+        for (int index = 0; index < drawn.length; index++) {
+            if (drawn[index] == null) {
+                drawn[index] = card;
+                break;
+            }
+        }
     }
 
     public static void drawCard() throws InvalidSuiteExcepetion {
@@ -86,14 +99,9 @@ public class App {
             total2 += currentValue;
         }
         if (alreadyDrawn()) {
-            drawCard();
+            randomCard();
         } else {
-            for (int index = 0; index < drawn.length; index++) {
-                if (drawn[index] == null) {
-                    drawn[index] = card;
-                    break;
-                }
-            }
+            addToDrawn(card);
         }
     }
 
@@ -102,12 +110,12 @@ public class App {
         boolean keepPlaying = true;
         String faceDown, faceUp;
         boolean roundOver = false;
-        String ratio = "You have won " + won + " out of " + played + " games.";
         while (keepPlaying) {
             played += 1;
             // Draws random card
             randomCard();
             faceDown = currentCard;
+            addToDrawn(faceDown);
             if (checkAce()) {
                 total1 += 1;
                 total2 += 11;
@@ -117,6 +125,7 @@ public class App {
             }
             randomCard();
             faceUp = currentCard;
+            addToDrawn(faceUp);
             if (checkAce()) {
                 total1 += 1;
                 total2 += 11;
@@ -132,25 +141,19 @@ public class App {
             while (!roundOver) {
                 // If total greater or equal to 21 game ends
                 roundOver = isBlackjack();
-                System.out.println("hit(h) or stick(s)");
-                roundOver = reader.hasNext("s");
                 if (!roundOver) {
+                    System.out.println("hit(h) or stick(s)");
+                    roundOver = reader.hasNext("s");
+                    if (roundOver) {
+                        break;
+                    }
                     drawCard();
-                    printTotal();
+                    roundOver = isBlackjack();
+                    System.out.println(printTotal());
                 }
             }
-            System.out.println(printTotal());
-            // resets incase user wants to play again
-            total1 = 0;
-            total2 = 0;
-            System.out.println("Would you like another game? y or n");
-            boolean again = reader.hasNext("n");
-            if (again) {
-                keepPlaying = false;
-            }
-            roundOver = false;
+            printTotal();
+            keepPlaying = false;
         }
-        System.out.println(ratio);
     }
-
 }
