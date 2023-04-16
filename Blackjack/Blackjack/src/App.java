@@ -25,6 +25,7 @@ public class App {
     static int played = 0;
     static int won = 0;
     static Scanner reader = new Scanner(System.in);
+    static Scanner reader2 = new Scanner(System.in);
     static String[] drawn = new String[52];
     static boolean win = false;
 
@@ -88,6 +89,13 @@ public class App {
         }
     }
 
+    public static void reset() {
+        total1 = 0;
+        total2 = 0;
+        played = 0;
+        drawn = new String[52];
+    }
+
     public static void drawCard() throws InvalidSuiteExcepetion {
         randomCard();
         String card = currentCard;
@@ -106,11 +114,12 @@ public class App {
     }
 
     public static void main(String[] args) throws InvalidSuiteExcepetion {
-
+        won = 0;
         boolean keepPlaying = true;
         String faceDown, faceUp;
         boolean roundOver = false;
         while (keepPlaying) {
+            reset();
             played += 1;
             // Draws random card
             randomCard();
@@ -152,8 +161,8 @@ public class App {
                     System.out.println(printTotal());
                 }
             }
-            printTotal();
             keepPlaying = false;
+            printTotal();
         }
     }
 }
